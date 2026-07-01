@@ -1,0 +1,111 @@
+# ==============================================================================
+# IRIS-AI Requirements
+# ISRO Bharatiya Antariksh Hackathon 2026 – PS-10
+# Intelligent Remote-sensing Infrared Interpretation Suite
+# ==============================================================================
+
+# ---------------- GPU INSTALLATION ----------------
+#
+# Windows + NVIDIA GPU (Recommended)
+#
+# Step 1:
+# pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 ^
+#     --index-url https://download.pytorch.org/whl/cu121
+#
+# Step 2:
+# pip install -r requirements.txt
+#
+# Verify:
+# python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0))"
+#
+# Expected Output:
+# 2.1.2+cu121
+# 12.1
+# True
+# NVIDIA GeForce RTX 2050
+#
+# --------------------------------------------------
+
+# ===============================
+# Core Deep Learning
+# ===============================
+
+torch==2.1.2
+torchvision==0.16.2
+torchaudio==2.1.2
+
+# ===============================
+# Scientific Computing
+# ===============================
+
+numpy==1.24.3
+scipy==1.11.4
+pandas==2.1.4
+
+# ===============================
+# Image Processing
+# ===============================
+
+Pillow==10.1.0
+opencv-python==4.8.1.78
+
+# ===============================
+# Real-ESRGAN
+# ===============================
+
+basicsr==1.4.2
+realesrgan==0.3.0
+
+# ===============================
+# Segmentation (FastSAM / YOLO)
+# ===============================
+
+ultralytics==8.3.0
+
+# ===============================
+# Image Captioning (BLIP)
+# ===============================
+
+transformers==4.40.1
+accelerate==0.27.2
+sentencepiece==0.1.99
+
+# ===============================
+# Streamlit Frontend
+# ===============================
+
+streamlit==1.35.0
+streamlit-image-comparison==0.0.4
+
+# ===============================
+# FastAPI Backend
+# ===============================
+
+fastapi==0.109.2
+uvicorn==0.27.1
+python-multipart==0.0.9
+
+# ===============================
+# PDF Report Generation
+# ===============================
+
+reportlab==4.1.0
+
+# ===============================
+# Download Utilities
+# ===============================
+
+gdown==5.1.0
+
+# ===============================
+# Monitoring
+# ===============================
+
+psutil==5.9.8
+
+# ===============================
+# Utilities
+# ===============================
+
+requests==2.31.0
+tqdm==4.66.1

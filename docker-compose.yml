@@ -1,0 +1,68 @@
+version: "3.9"
+
+# ────────────────────────────────────────────────────────────────────────────
+# IRIS-AI Docker Compose
+# Intelligent Remote-sensing Infrared Interpretation Suite
+# ISRO Bharatiya Antariksh Hackathon 2026 – PS-10
+# ────────────────────────────────────────────────────────────────────────────
+
+services:
+  iris-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iris-ai
+    image: iris-ai:latest
+
+    ports:
+      - "8501:8501"
+
+    # Mount persistent volumes for outputs, weights, reports
+    volumes:
+      - ./weights:/app/weights
+      - ./outputs:/app/outputs
+      - ./reports:/app/reports
+      - ./checkpoints:/app/checkpoints
+      - ./assets:/app/assets
+
+    # GPU support (requires nvidia-container-toolkit)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    environment:
+      - PYTHONPATH=/app
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+      - STREAMLIT_SERVER_FILE_WATCHER_TYPE=none
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    labels:
+      - "com.iris-ai.version=1.0.0"
+      - "com.iris-ai.description=ISRO BAH 2026 PS-10 Solution"
+
+  # Optional: Nginx reverse proxy for production
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: iris-nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./configs/nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - iris-ai
