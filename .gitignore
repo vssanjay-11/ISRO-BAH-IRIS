@@ -1,45 +1,83 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+# Virtual environments
 .venv/
 venv/
 env/
+ENV/
+env.bak/
+venv.bak/
 
-__pycache__/
-*.pyc
-*.pyo
-
-.ipynb_checkpoints/
-
-.idea/
-.vscode/
-
-.cache/
-.pytest_cache/
-
-*.log
-
-weights/
-
-checkpoints/
-
-datasets/
-
-outputs/
-
-exports/
-
-reports/
-
-*.pth
-*.pt
-*.onnx
-
-*.zip
-*.pdf
-
+# Environment files
 .env
 .env.*
+!.env.example
 
-Thumbs.db
+# Jupyter / notebooks
+.ipynb_checkpoints/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
 
+# Machine learning / AI artifacts
+checkpoints/
+weights/
+models/weights/
+outputs/
+reports/
+logs/
+tmp/
+temp/
+.cache/
+wandb/
+mlruns/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.bin
+*.h5
+*.pb
+
+# Data and datasets
+datasets/
+data/Sample Datasets/
+*.zip
+*.tar
+*.tgz
+*.gz
+*.rar
+*.7z
+*.pdf
+*.tfrecord
+
+# Miscellaneous
+*.log
+*.out
 *.tmp
 *.bak
+*.orig
