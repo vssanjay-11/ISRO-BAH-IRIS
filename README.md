@@ -6,12 +6,15 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg?style=for-the-badge&logo=python)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg?style=for-the-badge&logo=pytorch)](https://pytorch.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.35%2B-red.svg?style=for-the-badge&logo=streamlit)](https://streamlit.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live-red.svg?style=for-the-badge&logo=streamlit)](https://iris-bah2026-isro.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 [![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg?style=for-the-badge)](https://github.com/vssanjay-11/ISRO-BAH-IRIS)
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://iris-bah2026-isro.streamlit.app/)
+
 IRIS-AI is a production-quality, end-to-end computer vision and image enhancement application tailored for satellite and aerial infrared imagery. Built for the ISRO Bharatiya Antariksh Hackathon 2026, it translates raw, low-resolution infrared images into high-resolution, colorized, and semantically annotated outputs.
+
 
 ---
 
