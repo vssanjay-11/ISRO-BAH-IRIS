@@ -8,20 +8,28 @@ from PIL import Image
 from utils.model_manager import ModelManager
 from backend.exporter import export_zip
 
-app = FastAPI(title="IRIS-AI API", version="2.0.0")
+app = FastAPI(
+    title="IRIS-AI API",
+    description="Inference API backend for the Intelligent Remote-sensing Infrared Interpretation Suite",
+    version="1.0.0"
+)
 mm = ModelManager.get_instance()
 
 @app.on_event("startup")
 async def startup_event():
+    """Preload all pipeline deep learning models on server startup."""
     mm.preload_all()
 
 @app.get("/")
 def read_root():
+    """Root health check endpoint."""
     return {"status": "ok", "message": "IRIS-AI Backend Running"}
 
 @app.get("/status")
 def get_status():
+    """Server status endpoint."""
     return {"status": "ok", "message": "IRIS-AI Backend Running"}
+
 
 @app.post("/predict")
 async def predict(

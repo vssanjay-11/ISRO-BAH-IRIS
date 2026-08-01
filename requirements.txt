@@ -26,86 +26,49 @@
 #
 # --------------------------------------------------
 
-# ===============================
 # Core Deep Learning
-# ===============================
-
 torch==2.1.2
-torchvision==0.16.2
 torchaudio==2.1.2
+torchvision==0.16.2
 
-# ===============================
-# Scientific Computing
-# ===============================
-
+# Scientific Computing & Data Analysis
 numpy==1.24.3
-scipy==1.11.4
 pandas==2.1.4
+scipy==1.11.4
 
-# ===============================
-# Image Processing
-# ===============================
-
-Pillow==10.1.0
+# Image Processing & Computer Vision
 opencv-python==4.8.1.78
+Pillow==10.1.0
 
-# ===============================
-# Real-ESRGAN
-# ===============================
-
+# Super Resolution (Real-ESRGAN)
 basicsr==1.4.2
 realesrgan==0.3.0
 
-# ===============================
-# Segmentation (FastSAM / YOLO)
-# ===============================
-
+# Image Segmentation & Object Detection
 ultralytics==8.3.0
 
-# ===============================
-# Image Captioning (BLIP)
-# ===============================
-
-transformers==4.40.1
+# Vision-Language & Captioning (BLIP)
 accelerate==0.27.2
 sentencepiece==0.1.99
+transformers==4.40.1
 
-# ===============================
-# Streamlit Frontend
-# ===============================
-
+# Streamlit Frontend UI
 streamlit==1.35.0
 streamlit-image-comparison==0.0.4
 
-# ===============================
-# FastAPI Backend
-# ===============================
-
+# API & Backend Services
 fastapi==0.109.2
-uvicorn==0.27.1
 python-multipart==0.0.9
+uvicorn==0.27.1
 
-# ===============================
-# PDF Report Generation
-# ===============================
-
+# Report Generation & Export
 reportlab==4.1.0
 
-# ===============================
-# Download Utilities
-# ===============================
-
+# Utilities & Monitoring
 gdown==5.1.0
-
-# ===============================
-# Monitoring
-# ===============================
-
 psutil==5.9.8
-
-# ===============================
-# Utilities
-# ===============================
-
 requests==2.31.0
 tqdm==4.66.1
+
+# Testing
+pytest==7.4.4
