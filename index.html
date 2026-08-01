@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IRIS-AI — Intelligent Remote-sensing Infrared Interpretation Suite</title>
+  <meta name="description" content="AI pipeline that colorizes, upscales, and semantically segments infrared satellite imagery. Built for ISRO Bharatiya Antariksh Hackathon 2026."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #05070f;
+      --surface:   #0d1117;
+      --card:      #161b27;
+      --border:    rgba(99,130,255,0.15);
+      --accent:    #6382ff;
+      --accent2:   #a78bfa;
+      --green:     #3ecf8e;
+      --orange:    #f97316;
+      --text:      #e2e8f0;
+      --muted:     #8b949e;
+      --glow:      rgba(99,130,255,0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,130,255,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(167,139,250,0.10) 0%, transparent 60%),
+        var(--bg);
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(99,130,255,0.07) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      border: 1px solid var(--border);
+      background: rgba(99,130,255,0.08);
+      color: var(--accent);
+      backdrop-filter: blur(6px);
+    }
+
+    .badge.green  { color: var(--green);  border-color: rgba(62,207,142,0.25); background: rgba(62,207,142,0.07); }
+    .badge.orange { color: var(--orange); border-color: rgba(249,115,22,0.25); background: rgba(249,115,22,0.07); }
+    .badge.purple { color: var(--accent2); border-color: rgba(167,139,250,0.25); background: rgba(167,139,250,0.07); }
+
+    .hero-emoji {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0.5rem auto 2rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 0 24px var(--glow);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px var(--glow); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: rgba(99,130,255,0.1); border-color: var(--accent); }
+
+    /* ── PIPELINE ── */
+    section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      align-items: stretch;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .pipeline-step {
+      flex: 1;
+      min-width: 130px;
+      max-width: 200px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1rem;
+      text-align: center;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pipeline-step:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(99,130,255,0.15);
+    }
+    .pipeline-step + .pipeline-step::before {
+      content: '→';
+      position: absolute;
+      left: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1.2rem;
+    }
+
+    .step-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+    .step-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+    .step-tech { font-size: 0.72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+    /* ── FEATURES GRID ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.6rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .card-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .card p  { font-size: 0.85rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── STACK ── */
+    .stack-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .tag {
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(99,130,255,0.1);
+      border: 1px solid var(--border);
+      color: var(--accent);
+    }
+
+    /* ── OUTPUTS ── */
+    .output-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      font-size: 0.88rem;
+    }
+    .output-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .output-table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .output-table tr:hover td { background: rgba(99,130,255,0.04); }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); }
+
+    /* ── QUICK START ── */
+    .code-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    .code-block .comment { color: var(--muted); }
+    .code-block .cmd { color: var(--green); }
+    .code-block .url  { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    @media (max-width: 640px) {
+      .pipeline { flex-direction: column; align-items: center; }
+      .pipeline-step + .pipeline-step::before { content: '↓'; left: 50%; top: -18px; transform: translateX(-50%); }
+      .pipeline-step { width: 100%; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<div class="hero">
+  <div class="badge-row">
+    <span class="badge">🛰️ ISRO BAH 2026 · PS-10</span>
+    <span class="badge green">✓ MIT License</span>
+    <span class="badge purple">Python 3.10</span>
+    <span class="badge orange">PyTorch 2.1</span>
+  </div>
+
+  <span class="hero-emoji">🛰️</span>
+
+  <h1>IRIS-AI</h1>
+  <p style="font-size:1.1rem; color: var(--accent2); font-weight:600; margin-bottom:0.5rem;">
+    Intelligent Remote-sensing Infrared Interpretation Suite
+  </p>
+  <p class="hero-sub">
+    An end-to-end AI pipeline that transforms raw infrared satellite imagery
+    into high-resolution, colorized, semantically annotated, and human-interpretable outputs.
+  </p>
+
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://github.com/vssanjay-11/ISRO-BAH-IRIS" target="_blank">
+      ⭐ View on GitHub
+    </a>
+    <a class="btn btn-outline" href="https://github.com/vssanjay-11/ISRO-BAH-IRIS#-quick-start" target="_blank">
+      📖 Quick Start
+    </a>
+    <a class="btn btn-outline" href="https://github.com/vssanjay-11/ISRO-BAH-IRIS/blob/main/docs/architecture.md" target="_blank">
+      🏗️ Architecture
+    </a>
+  </div>
+</div>
+
+<hr/>
+
+<!-- ═══════════════════════════════ PIPELINE ═══════════════════════════ -->
+<section>
+  <p class="section-label">How it works</p>
+  <h2>Five-Stage Deep Learning Pipeline</h2>
+  <p style="color:var(--muted); max-width:640px;">
+    Every infrared image flows through a sequential, modular pipeline. Each stage is independently
+    testable and replaceable — the UNet++ GAN colorizer is treated as a black-box inference engine.
+  </p>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <span class="step-icon">🔆</span>
+      <div class="step-title">Enhancement</div>
+      <div class="step-tech">CLAHE · NL-Means · Gamma</div>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-icon">🔍</span>
+      <div class="step-title">Super Resolution</div>
+      <div class="step-tech">Real-ESRGAN ×4</div>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-icon">🎨</span>
+      <div class="step-title">Colorization</div>
+      <div class="step-tech">UNet++ GAN</div>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-icon">🗺️</span>
+      <div class="step-title">Segmentation</div>
+      <div class="step-tech">FastSAM</div>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-icon">📝</span>
+      <div class="step-title">Interpretation</div>
+      <div class="step-tech">BLIP + ISRO Templates</div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- ═══════════════════════════════ FEATURES ══════════════════════════ -->
+<section>
+  <p class="section-label">Features</p>
+  <h2>What IRIS-AI Does</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>Zero VRAM Duplication</h3>
+      <p>A ModelManager singleton loads each neural network exactly once, preventing GPU OOM errors across five simultaneous models.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎨</div>
+      <h3>UNet++ IR Colorization</h3>
+      <p>Nested dense skip pathways bridge the semantic gap between encoder and decoder, producing accurate texture recovery in roads, water, and vegetation.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h3>×4 Super Resolution</h3>
+      <p>Real-ESRGAN reconstructs spatial detail lost during IR capture, producing sharp high-resolution imagery from low-res thermal inputs.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🗺️</div>
+      <h3>Semantic Land Cover Mapping</h3>
+      <p>FastSAM identifies and colour-codes roads, buildings, water bodies, vegetation, and bare land without manual annotation at inference time.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <h3>Analyst PDF Reports</h3>
+      <p>ReportLab-generated professional PDF reports combine all pipeline outputs with a natural-language BLIP scene interpretation.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🖥️</div>
+      <h3>Premium Streamlit Dashboard</h3>
+      <p>An 8-page dashboard for interactive inference, batch processing, comparison sliders, analytics, and ZIP export — no code required.</p>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- ═══════════════════════════════ OUTPUTS ═══════════════════════════ -->
+<section>
+  <p class="section-label">Pipeline Outputs</p>
+  <h2>What You Get</h2>
+  <table class="output-table">
+    <thead>
+      <tr><th>File</th><th>Stage</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">00_original.png</td><td>Input</td><td>Raw IR source image</td></tr>
+      <tr><td class="mono">01_enhanced.png</td><td>Enhancement</td><td>After CLAHE, denoising, and gamma correction</td></tr>
+      <tr><td class="mono">02_super_res.png</td><td>Super Resolution</td><td>×4 upscaled with Real-ESRGAN</td></tr>
+      <tr><td class="mono">03_colorized.png</td><td>Colorization</td><td>UNet++ GAN colorized RGB output</td></tr>
+      <tr><td class="mono">04_segmented.png</td><td>Segmentation</td><td>FastSAM semantic class map</td></tr>
+      <tr><td class="mono">05_overlay.png</td><td>Segmentation</td><td>Semi-transparent overlay on colorized image</td></tr>
+      <tr><td class="mono">06_caption.txt</td><td>Interpretation</td><td>ISRO analyst natural-language scene summary</td></tr>
+      <tr><td class="mono">IRIS_AI_Report.pdf</td><td>Export</td><td>Professional PDF report with all outputs</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr/>
+
+<!-- ═══════════════════════════════ STACK ════════════════════════════ -->
+<section>
+  <p class="section-label">Technology Stack</p>
+  <h2>Built With</h2>
+  <div class="stack-list">
+    <span class="tag">PyTorch 2.1</span>
+    <span class="tag">UNet++ GAN</span>
+    <span class="tag">Real-ESRGAN</span>
+    <span class="tag">FastSAM</span>
+    <span class="tag">BLIP</span>
+    <span class="tag">Streamlit</span>
+    <span class="tag">FastAPI</span>
+    <span class="tag">OpenCV</span>
+    <span class="tag">ReportLab</span>
+    <span class="tag">Python 3.10</span>
+    <span class="tag">CUDA 12.1</span>
+    <span class="tag">Docker</span>
+  </div>
+</section>
+
+<hr/>
+
+<!-- ═══════════════════════════════ QUICK START ══════════════════════ -->
+<section>
+  <p class="section-label">Get Started</p>
+  <h2>Quick Start in 3 Steps</h2>
+  <div class="code-block">
+    <span class="comment"># 1. Clone and install</span><br/>
+    <span class="cmd">git clone</span> <span class="url">https://github.com/vssanjay-11/ISRO-BAH-IRIS.git</span><br/>
+    <span class="cmd">pip install</span> torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121<br/>
+    <span class="cmd">pip install</span> -r requirements.txt<br/><br/>
+    <span class="comment"># 2. Download model weights</span><br/>
+    <span class="cmd">python</span> download_weights.py<br/><br/>
+    <span class="comment"># 3. Launch the dashboard</span><br/>
+    <span class="cmd">streamlit run</span> frontend/app.py
+  </div>
+</section>
+
+<hr/>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════ -->
+<footer>
+  <p style="margin-bottom:0.5rem; font-size:1.2rem;">🛰️ IRIS-AI</p>
+  <p>
+    Built for <strong>ISRO Bharatiya Antariksh Hackathon 2026 · PS-10</strong> &nbsp;·&nbsp;
+    <a href="https://github.com/vssanjay-11/ISRO-BAH-IRIS" target="_blank">GitHub</a> &nbsp;·&nbsp;
+    <a href="https://github.com/vssanjay-11/ISRO-BAH-IRIS/blob/main/LICENSE" target="_blank">MIT License</a> &nbsp;·&nbsp;
+    <a href="https://github.com/vssanjay-11/ISRO-BAH-IRIS/blob/main/CONTRIBUTING.md" target="_blank">Contribute</a>
+  </p>
+  <p style="margin-top:0.5rem; color: #555;">© 2026 IRIS-AI Contributors</p>
+</footer>
+
+</body>
+</html>
